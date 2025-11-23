@@ -1,58 +1,44 @@
 package com.example.weatherappcompose
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.android.volley.Request
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-import com.example.weatherappcompose.MainActivity
-import com.example.weatherappcompose.data.impl.WeatherRepositoryImpl
 import com.example.weatherappcompose.domain.model.WeatherModel
 import com.example.weatherappcompose.domain.usecase.GetWeatherUseCase
-import com.example.weatherappcompose.screen.DialogSearch
-import com.example.weatherappcompose.screen.MainCard
-import com.example.weatherappcompose.screen.TabLayout
-import org.json.JSONObject
+import com.example.weatherappcompose.ui.screen.DialogSearch
+import com.example.weatherappcompose.ui.screen.MainCard
+import com.example.weatherappcompose.ui.screen.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 const val API_KEY = "080e76a8ce88459eba7144015252009"
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var repository: GetWeatherUseCase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val repository = WeatherRepositoryImpl(this)
-        val getWeatherUseCase = GetWeatherUseCase(repository)
+//        val repository = WeatherRepositoryImpl(this)
+//        val getWeatherUseCase = GetWeatherUseCase(repository)
 
         setContent {
 
-            WeatherApp(getWeatherUseCase)
-
+            WeatherApp(repository)
 
 //            if (dialogState.value){
 //                DialogSearch(dialogState, onSubmit = {
@@ -61,8 +47,6 @@ class MainActivity : ComponentActivity() {
 //            }
 //            getData("Moscow", this, daysList, currantDay)
 
-
-//
         }
     }
 }
