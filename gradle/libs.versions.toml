@@ -11,6 +11,9 @@ composeBom = "2024.09.00"
 volley = "1.2.1"
 coil = "2.2.2"
 accompanist = "0.32.0"
+dagger = "2.57.2"
+hilt-compiler = "2.57.2"
+hilt-android = "2.57.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -31,9 +34,13 @@ androidx-volley = { group = "com.android.volley", name = "volley", version.ref =
 io-coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil"}
 accompanist-pager = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "accompanist" }
 accompanist-pager-indicators = { group = "com.google.accompanist", name = "accompanist-pager-indicators", version.ref = "accompanist" }
+dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt-android" }
+dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt-compiler" }
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.2.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger"}
 

@@ -7,9 +7,10 @@ import com.android.volley.toolbox.Volley
 import com.example.weatherappcompose.API_KEY
 import com.example.weatherappcompose.domain.model.WeatherModel
 import com.example.weatherappcompose.domain.repository.WeatherRepository
+import jakarta.inject.Inject
 import org.json.JSONObject
 
-class WeatherRepositoryImpl(private val context: Context) : WeatherRepository {
+class WeatherRepositoryImpl @Inject constructor(private val context: Context) : WeatherRepository {
 
     override fun getWeatherData(
         city: String,
