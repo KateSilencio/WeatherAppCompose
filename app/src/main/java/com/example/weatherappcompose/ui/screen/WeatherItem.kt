@@ -78,9 +78,14 @@ fun ListItem(item: WeatherModel, currentDay: MutableState<WeatherModel>) {
 
             }
             Text(
-                text = item.currentTemp.ifEmpty {
+                text = if (item.currentTemp.isNotEmpty()) {
+                    item.currentTemp.toFloatOrNull()?.toInt()?.toString() ?: item.currentTemp
+                } else {
                     "${item.maxTemp.toFloat().toInt()}/${item.minTemp.toFloat().toInt()}"
                 },
+//                text = item.currentTemp.ifEmpty {
+//                    "${item.maxTemp.toFloat().toInt()}/${item.minTemp.toFloat().toInt()}"
+//                },
                 color = Color.White,
                 style = TextStyle(fontSize = 22.sp)
             )
