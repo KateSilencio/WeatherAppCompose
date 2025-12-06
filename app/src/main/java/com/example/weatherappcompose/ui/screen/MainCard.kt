@@ -1,5 +1,6 @@
 package com.example.weatherappcompose.ui.screen
 
+import android.icu.util.Calendar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -85,7 +86,9 @@ fun MainCard(
                     text = if (currentDay.value.currentTemp.isNotEmpty())
                         currentDay.value.currentTemp.toFloat().toInt().toString() + " C"
                     else
-                        "${currentDay.value.maxTemp.toFloat().toInt()}C/${currentDay.value.minTemp.toFloat().toInt()}C",
+                        "${
+                            currentDay.value.maxTemp.toFloat().toInt()
+                        }C/${currentDay.value.minTemp.toFloat().toInt()}C",
                     style = TextStyle(fontSize = 66.sp),
                     color = Color.White
                 )
@@ -189,7 +192,11 @@ fun TabLayout(
             modifier = Modifier.weight(1.0f)
         ) { index ->
             val list = when (index) {
-                0 -> getWeatherbyHours(currentDay.value.hours)
+                0 -> {
+                    val isCurrentDay = currentDay.value.currentTemp.isNotEmpty()
+                    getWeatherbyHours(currentDay.value.hours,isCurrentDay,currentDay)
+                }
+
                 1 -> daysList.value
                 else -> daysList.value
             }
@@ -199,28 +206,97 @@ fun TabLayout(
     }
 }
 
-private fun getWeatherbyHours(hours: String): List<WeatherModel> {
+private fun getWeatherbyHours(hours: String, isCurrantDay: Boolean,currentDay: MutableState<WeatherModel>): List<WeatherModel> {
     if (hours.isEmpty()) {
         return listOf()
     }
 
     val hoursArray = JSONArray(hours)
     val list = ArrayList<WeatherModel>()
-    for (i in 0 until hoursArray.length()) {
-        val item = hoursArray[i] as JSONObject
-        list.add(
-            WeatherModel(
-                "",
-                item.getString("time"),
-                item.getString("temp_c").toFloat().toInt().toString() + " C",
-                item.getJSONObject("condition").getString("text"),
-                item.getJSONObject("condition").getString("icon"),
-                "",
-                "",
-                "",
-                ""
+
+    if (isCurrantDay) {
+        //для сегодняшнего дня получаем текущий час
+        val currentDayTime = currentDay.value.time
+
+        val currentHour = try {
+            // Извлекаем час из строки времени
+            if (currentDayTime.contains(" ")) {
+                val timePart = currentDayTime.split(" ")[1] // "14:30"
+                timePart.split(":")[0].toInt() // 14
+            } else {
+                // Если нет времени, используем текущий час устройства
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+            }
+        } catch (e: Exception) {
+            Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        }
+
+        for (i in 0 until hoursArray.length()) {
+            val item = hoursArray[i] as JSONObject
+            val hourTime = item.getString("time") // 14:00 или 2024-01-15 14:00
+
+            // Извлекаем час из времени API
+            val hourFromAPI = try {
+                if (hourTime.contains(" ")) {
+                    //время в формате 2024-01-15 14:00
+                    hourTime.split(" ")[1].split(":")[0].toInt()
+                } else {
+                    //время в формате 14:00
+                    hourTime.split(":")[0].toInt()
+                }
+            } catch (e: Exception) { 0 }
+
+            //будущие часы
+            if (hourFromAPI >= currentHour) {
+                //формат часы:минуты
+                val displayTime = if (hourTime.contains(" ")) {
+                    hourTime.split(" ")[1]
+                } else {
+                    hourTime
+                }
+
+                list.add(
+                    WeatherModel(
+                        "",
+                        displayTime,
+                        "${item.getString("temp_c").toFloat().toInt()} C",
+                        item.getJSONObject("condition").getString("text"),
+                        item.getJSONObject("condition").getString("icon"),
+                        "",
+                        "",
+                        "",
+                        ""
+                    )
+                )
+            }
+        }
+    } else {
+        //часы для будущих дней
+        for (i in 0 until hoursArray.length()) {
+            val item = hoursArray[i] as JSONObject
+            val hourTime = item.getString("time")
+
+            // Форматир время для отображения
+            val displayTime = if (hourTime.contains(" ")) {
+                hourTime.split(" ")[1]
+            } else {
+                hourTime
+            }
+
+            list.add(
+                WeatherModel(
+                    "",
+                    displayTime,
+                    "${item.getString("temp_c").toFloat().toInt()} C",
+                    item.getJSONObject("condition").getString("text"),
+                    item.getJSONObject("condition").getString("icon"),
+                    "",
+                    "",
+                    "",
+                    ""
+                )
             )
-        )
+        }
     }
     return list
 }
